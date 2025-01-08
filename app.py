@@ -1,6 +1,62 @@
+import base64
 import numpy as np
 import streamlit as st
 from joblib import load
+
+import os
+
+# Path ke gambar
+image_path = "/Users/apri/Developments/prediksi-penyakit/images/background-streamlit.png"
+
+# Encode gambar ke Base64
+with open(image_path, "rb") as image_file:
+    encoded_string = base64.b64encode(image_file.read()).decode()
+
+# Gaya CSS dengan gambar Base64
+background_image = f"""
+<style>
+[data-testid="stAppViewContainer"] > .main {{
+    background-image: url("data:image/png;base64,{encoded_string}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}}
+[data-testid="stSidebar"] {{
+    background: rgba(0,0,0,0); /* Membuat sidebar transparan */
+}}
+button[role="button"] {{
+    color: white;
+    background-color: black;
+    border: 2px solid black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+}}
+button[role="button"]:hover {{
+    color: black;
+    background-color: white;
+    border-color: black;
+}}
+button[role="button"]:active {{
+    color: black;
+    background-color: white;
+    border-color: black;
+}}
+h1, h2, h3, h4, h5, h6 {{
+    color: black;  /* For header styles */
+}}
+.stTextInput label, .stSelectbox label, .stNumberInput label {{
+    color: black;  /* Color for number input, selectbox, and other input labels */
+}}
+.stMarkdown, .stWrite, .stText {{
+    color: black;  /* Change text color of written output */
+}}
+</style>
+"""
+
+# Terapkan background ke Streamlit
+st.markdown(background_image, unsafe_allow_html=True)
 
 # Load the saved model and label encoder
 try:
@@ -85,42 +141,42 @@ medication_db = {
 }
 
 # Create input fields
-st.markdown("<h3 style='text-align: center;'>Project Machine Learning : Prediksi Penyakit</h3>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center;'>Universitas Bina Sarana Informatika</h3>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center;'>Slipi</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: black;'>Project Machine Learning : Prediksi Penyakit</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: black;'>Universitas Bina Sarana Informatika</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: black;'>Slipi</h3>", unsafe_allow_html=True)
 st.markdown("</br>", unsafe_allow_html=True)
-st.markdown("<h6 style='text-align: left;'>Eka Tama Prasetya - 17225004</h6>", unsafe_allow_html=True)
-st.markdown("<h6 style='text-align: left;'>Apriyanto Dwi Herlambang - 17225079</h6>", unsafe_allow_html=True)
-st.markdown("<h6 style='text-align: left;'>Mata Kuliah : Pembelajaran Mesin", unsafe_allow_html=True)
-st.markdown("<h6 style='text-align: left;'>Dosen Pembimbing : Mushliha, M.Si", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left; color: black;'>Eka Tama Prasetya - 17225004</h6>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left; color: black;'>Apriyanto Dwi Herlambang - 17225079</h6>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left; color: black;'>Mata Kuliah : Pembelajaran Mesin", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left; color: black;'>Dosen Pembimbing : Mushliha, M.Si", unsafe_allow_html=True)
 st.markdown("</br>", unsafe_allow_html=True)
 
 # Ask user for the number of symptoms
-num_symptoms = st.number_input('How many symptoms do you have?', min_value=1, max_value=len(symptoms), step=1, value=1)
+num_symptoms = st.number_input('Berapa banyak gejala yang Anda alami?', min_value=1, max_value=len(symptoms), step=1, value=1)
 
 # Allow user to select symptoms based on the number they entered
 selected_symptoms = []
 for i in range(num_symptoms):
-    symptom = st.selectbox(f'Select symptom {i+1}', symptoms, key=f'symptom_{i}')
+    symptom = st.selectbox(f'Gejala Ke - {i+1}', symptoms, key=f'symptom_{i}')
     selected_symptoms.append(symptom)
 
 # Convert selected symptoms to input vector
 input_vector = [1 if symptom in selected_symptoms else 0 for symptom in symptoms]
 
 # Predict the disease
-if st.button("Predict Diagnosis"):
+if st.button("Prediksi Penyakit"):
     try:
         input_data = np.array(input_vector).reshape(1, -1)
         prediction = model.predict(input_data)
         predicted_disease = label_encoder.inverse_transform(prediction)[0]
         
         # Display the prediction
-        st.write(f'Predicted Diagnosis: **{predicted_disease}**')
+        st.write(f'Prediksi Penyakit: **{predicted_disease}**')
         
         # Display drug recommendations
         if predicted_disease in medication_db:
             drugs = medication_db[predicted_disease]
-            st.write("Recommended Drugs:")
+            st.write("Rekomendasi Obat:")
             for drug in drugs:
                 st.write(f"- {drug}")
         else:

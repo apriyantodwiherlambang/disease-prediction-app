@@ -6,7 +6,7 @@ from joblib import load
 import os
 
 # Path ke gambar
-image_path = "/Users/apri/Developments/prediksi-penyakit/images/background-streamlit.png"
+image_path = "/images/background-streamlit.png"
 
 # Encode gambar ke Base64
 with open(image_path, "rb") as image_file:

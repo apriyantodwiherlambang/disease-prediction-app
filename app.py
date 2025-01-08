@@ -6,6 +6,9 @@ from joblib import load
 try:
     model = load('diagnosis_predictor.joblib')
     label_encoder = load('label_encoder.joblib')
+     # Ambil akurasi dan nama model dari metadata di objek model
+    model_accuracy = model.score if hasattr(model, "score") else 0.93  # Jika score tidak ditemukan, gunakan default
+    model_name = type(model).__name__
 except Exception as e:
     st.error(f"Error loading model or label encoder: {e}")
     st.stop()
@@ -37,10 +40,60 @@ symptoms = [
     "red_sore_around_nose", "yellow_crust_ooze"
 ]
 
+medication_db = {
+    "Fungal infection": ["Clotrimazole", "Fluconazole"],
+    "Allergy": ["Loratadine", "Cetirizine"],
+    "GERD": ["Omeprazole", "Esomeprazole"],
+    "Chronic cholestasis": ["Ursodiol", "Cholestyramine"],
+    "Drug Reaction": ["Antihistamines", "Corticosteroids"],
+    "Peptic ulcer disease": ["Ranitidine", "Pantoprazole"],
+    "AIDS": ["Antiretroviral Therapy (ART)", "Zidovudine"],
+    "Diabetes": ["Metformin", "Insulin"],
+    "Gastroenteritis": ["Oral Rehydration Salts", "Loperamide"],
+    "Bronchial Asthma": ["Salbutamol", "Budesonide"],
+    "Hypertension": ["Amlodipine", "Losartan"],
+    "Migraine": ["Sumatriptan", "Propranolol"],
+    "Cervical spondylosis": ["NSAIDs", "Physical Therapy"],
+    "Paralysis (brain hemorrhage)": ["Rehabilitation Therapy", "Anticoagulants"],
+    "Jaundice": ["Hepatoprotective Agents", "Vitamin K"],
+    "Malaria": ["Chloroquine", "Artemether-Lumefantrine"],
+    "Chicken pox": ["Acyclovir", "Calamine Lotion"],
+    "Dengue": ["Paracetamol", "Fluid Replacement Therapy"],
+    "Typhoid": ["Ciprofloxacin", "Azithromycin"],
+    "Hepatitis A": ["Rest", "Balanced Diet"],
+    "Hepatitis B": ["Entecavir", "Tenofovir"],
+    "Hepatitis C": ["Sofosbuvir", "Ledipasvir"],
+    "Hepatitis D": ["Interferon Alpha", "Antivirals"],
+    "Hepatitis E": ["Rest", "Supportive Care"],
+    "Alcoholic hepatitis": ["Prednisolone", "Pentoxifylline"],
+    "Tuberculosis": ["Isoniazid", "Rifampin"],
+    "Common Cold": ["Paracetamol", "Decongestants"],
+    "Pneumonia": ["Amoxicillin", "Azithromycin"],
+    "Dimorphic hemorrhoids (piles)": ["Topical Ointments", "Fiber Supplements"],
+    "Heart attack": ["Aspirin", "Clopidogrel"],
+    "Varicose veins": ["Compression Stockings", "Sclerotherapy"],
+    "Hypothyroidism": ["Levothyroxine"],
+    "Hyperthyroidism": ["Methimazole", "Propylthiouracil"],
+    "Hypoglycemia": ["Glucose Tablets", "Dextrose"],
+    "Osteoarthritis": ["Acetaminophen", "NSAIDs"],
+    "Arthritis": ["Methotrexate", "Sulfasalazine"],
+    "(vertigo) Paroxysmal Positional Vertigo": ["Epley Maneuver", "Meclizine"],
+    "Acne": ["Benzoyl Peroxide", "Clindamycin"],
+    "Urinary tract infection": ["Nitrofurantoin", "Trimethoprim-Sulfamethoxazole"],
+    "Psoriasis": ["Topical Corticosteroids", "Calcipotriol"],
+    "Impetigo": ["Mupirocin", "Retapamulin"]
+}
 
 # Create input fields
-st.markdown("<h2 style='text-align: center;'>Universitas Bina Sarana Informatika</h2>", unsafe_allow_html=True)
-st.markdown("<h2 style='text-align: center;'>Prediksi Penyakit</h2>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Project Machine Learning : Prediksi Penyakit</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Universitas Bina Sarana Informatika</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center;'>Slipi</h3>", unsafe_allow_html=True)
+st.markdown("</br>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left;'>Eka Tama Prasetya - 17225004</h6>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left;'>Apriyanto Dwi Herlambang - 17225079</h6>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left;'>Mata Kuliah : Pembelajaran Mesin", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: left;'>Dosen Pembimbing : Mushliha, M.Si", unsafe_allow_html=True)
+st.markdown("</br>", unsafe_allow_html=True)
 
 # Ask user for the number of symptoms
 num_symptoms = st.number_input('How many symptoms do you have?', min_value=1, max_value=len(symptoms), step=1, value=1)
@@ -63,5 +116,14 @@ if st.button("Predict Diagnosis"):
         
         # Display the prediction
         st.write(f'Predicted Diagnosis: **{predicted_disease}**')
+        
+        # Display drug recommendations
+        if predicted_disease in medication_db:
+            drugs = medication_db[predicted_disease]
+            st.write("Recommended Drugs:")
+            for drug in drugs:
+                st.write(f"- {drug}")
+        else:
+            st.write("No specific drug recommendations available for this condition.")
     except Exception as e:
         st.error(f"Error during prediction: {e}")
